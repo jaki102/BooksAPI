@@ -44,11 +44,7 @@ export default {
   },
   methods:{
     sortMethod(param, dir){
-      if(dir == 'ASC'){
-        dir = 'DESC' 
-      } else {
-        dir = 'ASC'
-      }
+      dir = dir === 'ASC' ? 'DESC' : 'ASC';
       axios.get('http://localhost:3000', { params: { parameter: param, direction: dir} }).then((response)=>{
         this.books = response.data
       })
