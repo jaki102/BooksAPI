@@ -5,8 +5,6 @@
 * Vue: 2.6.10
 * Express.js: 4.17.1
 * MySQL: 2.17.1
-## Status
-Done
 ## Setup
 ### Backend
 from the level of the server folder
