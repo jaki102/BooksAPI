@@ -18,16 +18,7 @@ db.connect((err)=>{
 
 const app = express();
 
-app.get('/books', (req, res) => {
-    let sql = 'SELECT * FROM book_info';
-    let query = db.query(sql, (err, results) => {
-        if(err) throw err;
-        res.send(results);
-    })
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
-})
-
-app.get('/', function(req, res){
+app.get('/books', function(req, res){
     let sql;
     switch (req.query.parameter) {
         case 'id':
@@ -44,6 +35,9 @@ app.get('/', function(req, res){
             break;
         case 'pages':
             sql = `SELECT * FROM book_info ORDER BY pages ${req.query.direction}`;
+            break;
+        default:
+            sql = 'SELECT * FROM book_info';
             break;
     }
     let query = db.query(sql, (err, results) => {
