@@ -47,7 +47,6 @@ export default {
       dir = dir === 'ASC' ? 'DESC' : 'ASC';
       axios.get('http://localhost:3000/books', { params: { parameter: param, direction: dir} }).then((response)=>{
         this.books = response.data
-        console.log(response.data)
       })
       .catch((err)=>{
         console.log(err);
