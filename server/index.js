@@ -1,49 +1,49 @@
 const express = require('express');
 const mysql = require('mysql');
+const Sequelize = require('sequelize');
 
-const db = mysql.createConnection({
-    host     : 'homework.c9ozeq4b42xn.eu-central-1.rds.amazonaws.com',
-    user     : 'homework',
-    password : 'pass1',
-    database : 'books',
-    port     : '3306'
+const sequelize = new Sequelize('books', 'homework', 'pass1', {
+    host: 'homework.c9ozeq4b42xn.eu-central-1.rds.amazonaws.com',
+    dialect: 'mysql'
 });
 
-db.connect((err)=>{
-    if(err){
-        throw err;
-    }
-    console.log('Connected...');
+let Books = sequelize.define('book_info',{
+    id:{
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    title: Sequelize.STRING,
+    author: Sequelize.STRING,
+    class: Sequelize.STRING,
+    pages: Sequelize.INTEGER
+},
+{
+    freezeTableName: true,
+    timestamps: false
 })
 
 const app = express();
 
 app.get('/books', function(req, res){
+    let results = [];
     let sql;
-    switch (req.query.parameter) {
-        case 'id':
-            sql = `SELECT * FROM book_info ORDER BY id ${req.query.direction}`;
-            break;
-        case 'title':
-            sql = `SELECT * FROM book_info ORDER BY title ${req.query.direction}`;
-            break;
-        case 'author':
-            sql = `SELECT * FROM book_info ORDER BY author ${req.query.direction}`;
-            break;
-        case 'class':
-            sql = `SELECT * FROM book_info ORDER BY class ${req.query.direction}`;
-            break;
-        case 'pages':
-            sql = `SELECT * FROM book_info ORDER BY pages ${req.query.direction}`;
-            break;
-        default:
-            sql = 'SELECT * FROM book_info';
-            break;
-    }
-    let query = db.query(sql, (err, results) => {
-        if(err) throw err;
+    sequelize.sync().then(()=>{       
+        if(req.query.parameter){
+            sql = Books.findAll({
+                order: [
+                    [req.query.parameter, req.query.direction]
+                ]
+            })
+        } else {
+            sql = Books.findAll()
+        }
+        sql.then((books)=>{
+            for(i = 0; i<books.length; i++)
+                results.push(books[i].dataValues);
             res.send(results);
         })
+    })
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
 });
 
